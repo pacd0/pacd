@@ -21,4 +21,4 @@ pacd -l 0.0.0.0:8080 domains.txt
 # set proxy address
 pacd -p "SOCKS5 127.0.0.1:9080" domains.txt
 
-```⏎
+```
