@@ -1,0 +1,58 @@
+const proxy = 'SOCKS5 127.0.0.1:1080;';
+const direct = 'DIRECT;';
+
+const hasOwnProperty = Object.hasOwnProperty;
+
+const list_domains = {
+{{#each domains}}'{{this}}': 1,{{/each}}
+};
+
+function is_china_domain(domain) {
+  return !!dnsDomainIs(domain, '.cn');
+}
+
+function match_domains(domain, domains) {
+  let suffix;
+  let pos = domain.lastIndexOf('.');
+  pos = domain.lastIndexOf('.', pos - 1);
+  while (1) {
+    if (pos <= 0) {
+      return hasOwnProperty.call(domains, domain);
+    }
+    suffix = domain.substring(pos + 1);
+    if (hasOwnProperty.call(domains, suffix)) {
+      return true;
+    }
+    pos = domain.lastIndexOf('.', pos - 1);
+  }
+}
+
+/**
+ * @return {string} Connect via direct or proxy.
+ */
+function FindProxyForURL(url, host) {
+  if (typeof host === 'undefined'
+    || isPlainHostName(host) === true
+    || host === '127.0.0.1'
+    || host === 'localhost') {
+    return direct;
+  }
+
+  var resolved_ip = dnsResolve(host);
+  if (isInNet(resolved_ip, '10.0.0.0', '255.0.0.0')
+    || isInNet(resolved_ip, '172.16.0.0', '255.240.0.0')
+    || isInNet(resolved_ip, '192.168.0.0', '255.255.0.0')
+    || isInNet(resolved_ip, '127.0.0.0', '255.255.255.0')) {
+    return direct;
+  }
+
+  if (is_china_domain(host) === true) {
+    return direct;
+  }
+
+  if (match_domains(host, list_domains) === true) {
+    return proxy;
+  }
+
+  return direct;
+}
