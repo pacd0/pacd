@@ -1,0 +1,10 @@
+google.com
+youtube.com
+facebook.com
+wikipedia.org
+amazon.com
+reddit.com
+netflix.com
+blogspot.com
+instagram.com
+twitter.com
